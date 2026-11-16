@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Portfólio profissional de Mhell Barroca Novaes: tecnologia, automação e DevOps.">
+  <meta name="theme-color" content="#0b0a0b">
+  <title>Mhell Barroca Novaes | Portfólio Profissional</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="pular" href="#conteudo">Ir para o conteúdo</a>
+
+  <header class="hero">
+    <nav class="menu" aria-label="Principal">
+      <a class="marca" href="#topo">MBN</a>
+      <ul>
+        <li><a href="#sobre">Sobre</a></li>
+        <li><a href="#habilidades">Habilidades</a></li>
+        <li><a href="#projetos">Projetos</a></li>
+        <li><a href="#contato">Contato</a></li>
+      </ul>
+    </nav>
+
+    <div class="hero-grade" id="topo">
+      <div class="hero-texto">
+        <p class="papel">Tecnologia, automação e DevOps</p>
+        <h1>Mhell Barroca Novaes</h1>
+        <p class="lide">Construo e publico sites com esteiras automatizadas, para que cada entrega chegue ao ar com qualidade e sem sustos.</p>
+        <div class="acoes">
+          <a class="botao botao-cheio" href="#projetos">Ver projetos</a>
+          <a class="botao" href="https://www.linkedin.com/in/mhell-barroca-4a0948252/" target="_blank" rel="noopener">Falar comigo</a>
+        </div>
+      </div>
+
+      <figure class="hero-foto">
+        <img src="images/foto.jpg" alt="Retrato de Mhell Barroca Novaes" width="393" height="400">
+      </figure>
+    </div>
+  </header>
+
+  <main id="conteudo">
+    <section class="secao" id="sobre" aria-labelledby="t-sobre">
+      <h2 id="t-sobre">Sobre</h2>
+      <div class="secao-corpo">
+        <p class="destaque">Estudante de tecnologia, com foco em integração e entrega contínuas.</p>
+        <p>Gosto de transformar tarefas repetitivas em processos automáticos e confiáveis. Neste portfólio, cada alteração passa por uma pipeline no GitHub Actions que confere a estrutura do código, o peso dos arquivos, os links e as imagens antes de qualquer publicação.</p>
+      </div>
+    </section>
+
+    <section class="secao" id="habilidades" aria-labelledby="t-hab">
+      <h2 id="t-hab">Habilidades técnicas</h2>
+      <div class="secao-corpo colunas">
+        <div>
+          <h3>Desenvolvimento web</h3>
+          <ul class="lista">
+            <li>HTML5 semântico</li>
+            <li>CSS3 e design responsivo</li>
+            <li>Lógica de programação</li>
+          </ul>
+        </div>
+        <div>
+          <h3>DevOps e automação</h3>
+          <ul class="lista">
+            <li>GitHub Actions</li>
+            <li>CI/CD e Matrix Strategy</li>
+            <li>Deploy no GitHub Pages</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Ferramentas</h3>
+          <ul class="lista">
+            <li>Git e GitHub</li>
+            <li>Linux e linha de comando</li>
+            <li>Linter com HTMLHint</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="secao" id="projetos" aria-labelledby="t-proj">
+      <h2 id="t-proj">Projetos</h2>
+      <div class="secao-corpo">
+        <article class="projeto">
+          <h3>Esteira de Produção (CI/CD)</h3>
+          <p>Pipeline no GitHub Actions que valida cada Pull Request, bloqueia o merge quando algo falha e publica o site automaticamente no GitHub Pages. Inclui notificação de falha e testes em duas versões do Node.js.</p>
+          <p class="tags">GitHub Actions, YAML, GitHub Pages, Node.js</p>
+        </article>
+        <article class="projeto">
+          <h3>Portfólio Profissional</h3>
+          <p>Este site, feito com HTML e CSS puros, sem frameworks. Serve de base para testar a pipeline: tamanho de imagens, validade dos links e código limpo.</p>
+          <p class="tags">HTML5, CSS3, Design responsivo</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="contato" id="contato" aria-labelledby="t-contato">
+      <div class="contato-caixa">
+        <h2 id="t-contato">Vamos conversar sobre o seu próximo projeto.</h2>
+        <p>Encontre meu trabalho e fale comigo pelas redes abaixo.</p>
+        <ul class="redes">
+          <li><a class="botao botao-cheio" href="https://github.com/MhellBarroca?tab=repositories" target="_blank" rel="noopener">GitHub</a></li>
+          <li><a class="botao" href="https://www.linkedin.com/in/mhell-barroca-4a0948252/" target="_blank" rel="noopener">LinkedIn</a></li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer class="rodape">
+    <p>© 2026 Mhell Barroca Novaes. Publicado com GitHub Actions e GitHub Pages.</p>
+  </footer>
+</body>
+</html>

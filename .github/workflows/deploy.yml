@@ -1,0 +1,68 @@
+name: CD - Deploy no GitHub Pages
+
+on:
+  push:
+    branches: [main]
+
+# Permissões necessárias para publicar no GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Preparar site
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar o código
+        uses: actions/checkout@v4
+
+      - name: Montar a pasta do site
+        run: |
+          mkdir _site
+          cp index.html style.css _site/
+          cp -r images _site/
+
+      - name: Configurar o Pages
+        uses: actions/configure-pages@v5
+
+      - name: Enviar os arquivos
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    name: Publicar
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Publicar no GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  # Notificação no Discord quando o deploy FALHAR
+  notificar-falha:
+    name: Notificar falha
+    needs: [build, deploy]
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Enviar mensagem para o Discord
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: |
+          if [ -z "$DISCORD_WEBHOOK" ]; then
+            echo "Secret DISCORD_WEBHOOK não configurado. Pulando."
+            exit 0
+          fi
+          curl -s -H "Content-Type: application/json" \
+            -d "{\"content\": \"❌ O deploy FALHOU no repositório ${{ github.repository }}. Veja: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"}" \
+            "$DISCORD_WEBHOOK"

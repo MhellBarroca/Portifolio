@@ -1,0 +1,117 @@
+name: CI - Validação do Pull Request
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  # 1) PRIMEIRO de tudo: o index.html existe na raiz?
+  verificar-index:
+    name: Verificar index.html
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar o código
+        uses: actions/checkout@v4
+
+      - name: Checar se index.html existe na raiz
+        run: |
+          if [ ! -f "index.html" ]; then
+            echo "::error::index.html não encontrado na raiz do projeto!"
+            exit 1
+          fi
+          echo "index.html encontrado."
+
+  # 2) Linter rodando em duas versões do Node (Matrix Strategy)
+  linter:
+    name: Linter (Node ${{ matrix.node-version }})
+    needs: verificar-index
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18, 20]
+    steps:
+      - name: Baixar o código
+        uses: actions/checkout@v4
+
+      - name: Preparar o Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Instalar dependências
+        run: npm install
+
+      - name: Executar o Linter (HTMLHint)
+        run: npm run lint
+
+  # 3) Verificações de qualidade
+  qualidade:
+    name: Qualidade do código
+    needs: verificar-index
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar o código
+        uses: actions/checkout@v4
+
+      - name: Bloquear arquivos maiores que 500KB
+        run: |
+          grandes=$(find . -type f -size +500k -not -path "./.git/*" -not -path "./node_modules/*")
+          if [ -n "$grandes" ]; then
+            echo "::error::Arquivos acima de 500KB encontrados:"
+            echo "$grandes"
+            exit 1
+          fi
+          echo "Nenhum arquivo acima de 500KB."
+
+      - name: Varredura de TODO, FIXME, senha e password
+        run: |
+          erro=0
+          if grep -rnwE "TODO|FIXME" --include="*.html" --include="*.css" --include="*.js" --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=.github .; then
+            echo "::error::Encontrado TODO ou FIXME no código."
+            erro=1
+          fi
+          if grep -rniwE "senha|password" --include="*.html" --include="*.css" --include="*.js" --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=.github .; then
+            echo "::error::Encontrado termo sensível (senha/password) no código."
+            erro=1
+          fi
+          exit $erro
+
+      - name: Verificar links e imagens (href e src)
+        run: |
+          erro=0
+          while IFS= read -r arquivo; do
+            dir=$(dirname "$arquivo")
+            while IFS= read -r url; do
+              [ -z "$url" ] && continue
+              case "$url" in
+                \#*|mailto:*|tel:*|javascript:*) continue ;;
+                http://*|https://*)
+                  code=$(curl -s -o /dev/null -L -A "Mozilla/5.0" --max-time 20 -w "%{http_code}" "$url")
+                  # 999 = bloqueio anti-bot (LinkedIn costuma responder isso)
+                  if [ "$code" = "999" ]; then
+                    echo "AVISO: $url respondeu 999 (bloqueio anti-bot), aceito."
+                  elif [ "$code" -ge 400 ] || [ "$code" = "000" ]; then
+                    echo "::error file=$arquivo::URL inválida ($code): $url"
+                    erro=1
+                  else
+                    echo "OK ($code): $url"
+                  fi
+                  ;;
+                *)
+                  caminho="${url%%[?#]*}"
+                  if [ "${caminho:0:1}" = "/" ]; then
+                    alvo=".${caminho}"
+                  else
+                    alvo="$dir/$caminho"
+                  fi
+                  if [ -e "$alvo" ]; then
+                    echo "OK: $url"
+                  else
+                    echo "::error file=$arquivo::Caminho inválido: $url"
+                    erro=1
+                  fi
+                  ;;
+              esac
+            done < <(grep -oE '(href|src)="[^"]*"' "$arquivo" | sed -E 's/^(href|src)="//; s/"$//')
+          done < <(find . -name "*.html" -not -path "./node_modules/*" -not -path "./.git/*")
+          exit $erro

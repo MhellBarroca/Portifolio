@@ -1,0 +1,12 @@
+{
+  "name": "portfolio-profissional",
+  "version": "1.0.0",
+  "description": "Portfólio profissional com pipeline CI/CD",
+  "private": true,
+  "scripts": {
+    "lint": "htmlhint \"**/*.html\" --ignore \"**/node_modules/**\""
+  },
+  "devDependencies": {
+    "htmlhint": "1.1.4"
+  }
+}
